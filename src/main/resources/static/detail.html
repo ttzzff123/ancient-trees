@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古树详情 - 古树名木管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        body { padding-top: 20px; background-color: #f8f9fa; }
+        .detail-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 30px; }
+        .section-title {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .info-row { margin-bottom: 15px; }
+        .info-label { color: #666; font-weight: bold; display: inline-block; width: 120px; }
+        .info-value { color: #333; }
+        .badge-level { font-size: 1em; padding: 8px 15px; }
+        .level-一级 { background-color: #dc3545; }
+        .level-二级 { background-color: #fd7e14; }
+        .level-三级 { background-color: #28a745; }
+        .status-normal { color: #28a745; font-weight: bold; }
+        .status-danger { color: #dc3545; font-weight: bold; }
+        .photo-box {
+            height: 145px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+            margin-bottom: 10px;
+        }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .map-box {
+            height: 145px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🌳 古树详细信息</h2>
+        <div>
+            <a href="list.html" class="btn btn-outline-primary">← 返回列表</a>
+            <a href="index.html" class="btn btn-outline-secondary ml-2">返回首页</a>
+            <button class="btn btn-warning ml-2" id="editBtn">编辑</button>
+        </div>
+    </div>
+
+    <div id="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-3 text-muted">正在加载古树信息...</p>
+    </div>
+
+    <div id="detailContent" style="display: none;">
+        <div class="detail-card mb-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3 class="mb-3">
+                        <span id="treeSpecies">--</span>
+                        <span id="treeLevel" class="badge badge-level ml-2">--</span>
+                    </h3>
+                    <p class="text-muted mb-4">编号：<span id="treeCode">--</span></p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-row"><span class="info-label">树龄：</span><span class="info-value" id="treeAge">--</span></div>
+                            <div class="info-row"><span class="info-label">树高：</span><span class="info-value" id="treeHeight">--</span></div>
+                            <div class="info-row"><span class="info-label">胸径：</span><span class="info-value" id="treeDbh">--</span></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-row"><span class="info-label">生长状况：</span><span class="info-value" id="treeStatus">--</span></div>
+                            <div class="info-row"><span class="info-label">权属：</span><span class="info-value" id="treeOwnership">--</span></div>
+                            <div class="info-row"><span class="info-label">调查日期：</span><span class="info-value" id="surveyDate">--</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <!-- 照片 -->
+                    <div class="photo-box">
+                        <img id="treePhoto" src="" onerror="this.src='https://via.placeholder.com/300x145?text=暂无照片'">
+                    </div>
+                    <p class="text-muted text-center mb-3" id="photoDesc" style="font-size: 0.9rem;">暂无照片</p>
+
+                    <!-- 地图 -->
+                    <div class="map-box">
+                        <div class="text-center">
+                            <div>🗺️ 位置地图</div>
+                            <small class="d-block mt-1">经度：<span id="longitude">--</span></small>
+                            <small>纬度：<span id="latitude">--</span></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="section-title">📋 分类信息</div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-row"><span class="info-label">科：</span><span class="info-value" id="treeFamily">--</span></div>
+                    <div class="info-row"><span class="info-label">属：</span><span class="info-value" id="treeGenus">--</span></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-row"><span class="info-label">种：</span><span class="info-value" id="treeSpecies2">--</span></div>
+                    <div class="info-row"><span class="info-label">拉丁名：</span><span class="info-value" id="latinName">--</span></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-row"><span class="info-label">古树类别：</span><span class="info-value" id="treeCategory">--</span></div>
+                    <div class="info-row"><span class="info-label">普查范围：</span><span class="info-value" id="censusScope">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card mt-4">
+            <div class="section-title">📍 位置信息</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="info-row"><span class="info-label">省：</span><span class="info-value" id="province">--</span></div>
+                    <div class="info-row"><span class="info-label">市：</span><span class="info-value" id="city">--</span></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-row"><span class="info-label">县：</span><span class="info-value" id="county">--</span></div>
+                    <div class="info-row"><span class="info-label">乡镇：</span><span class="info-value" id="town">--</span></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-row"><span class="info-label">村：</span><span class="info-value" id="village">--</span></div>
+                    <div class="info-row"><span class="info-label">林区：</span><span class="info-value" id="forestArea">--</span></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-row"><span class="info-label">海拔：</span><span class="info-value" id="altitude">--</span></div>
+                    <div class="info-row"><span class="info-label">分布场所：</span><span class="info-value" id="locationType">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card mt-4">
+            <div class="section-title">🌱 生长环境</div>
+            <div class="row">
+                <div class="col-md-3"><div class="info-row"><span class="info-label">坡位：</span><span class="info-value" id="slopePosition">--</span></div></div>
+                <div class="col-md-3"><div class="info-row"><span class="info-label">坡度：</span><span class="info-value" id="slopeGradient">--</span></div></div>
+                <div class="col-md-3"><div class="info-row"><span class="info-label">坡向：</span><span class="info-value" id="slopeAspect">--</span></div></div>
+                <div class="col-md-3"><div class="info-row"><span class="info-label">环境等级：</span><span class="info-value" id="envGrade">--</span></div></div>
+            </div>
+        </div>
+
+        <div class="detail-card mt-4">
+            <div class="section-title">🌲 树体信息</div>
+            <div class="row">
+                <div class="col-md-3"><div class="info-row"><span class="info-label">地径：</span><span class="info-value" id="groundDiameter">--</span></div></div>
+                <div class="col-md-3"><div class="info-row"><span class="info-label">平均冠幅：</span><span class="info-value" id="crownSpread2">--</span></div></div>
+                <div class="col-md-3"><div class="info-row"><span class="info-label">胸围：</span><span class="info-value" id="circumference">--</span></div></div>
+                <div class="col-md-3"><div class="info-row"><span class="info-label">地围：</span><span class="info-value" id="groundCircumference">--</span></div></div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6"><div class="info-row"><span class="info-label">树体损伤：</span><span class="info-value" id="treeDamage">--</span></div></div>
+                <div class="col-md-6"><div class="info-row"><span class="info-label">人为干扰：</span><span class="info-value" id="humanDisturbance">--</span></div></div>
+            </div>
+        </div>
+
+        <div class="detail-card mt-4">
+            <div class="section-title">🛡️ 管理信息</div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><span class="info-label">主管部门：</span><span class="info-value" id="department">--</span></div>
+                    <div class="info-row"><span class="info-label">养护责任人：</span><span class="info-value" id="maintainer">--</span></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><span class="info-label">保护措施：</span><span class="info-value" id="protectionMeasures">--</span></div>
+                    <div class="info-row"><span class="info-label">重点价值：</span><span class="info-value" id="keyValue">--</span></div>
+                </div>
+            </div>
+            <div class="mt-3"><span class="info-label">备注：</span><span class="info-value" id="remarks">--</span></div>
+        </div>
+    </div>
+
+    <div id="errorMsg" class="alert alert-danger mt-4" style="display: none;">
+        加载失败，请检查ID是否正确或返回列表重试。
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function getUrlParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const id = getUrlParam('id');
+        if (!id) { showError(); return; }
+
+        document.getElementById('editBtn').onclick = function() {
+            window.location.href = `edit.html?id=${id}`;
+        };
+
+        loadTreeDetail(id);
+    });
+
+    function loadTreeDetail(id) {
+        fetch(`/api/trees/${id}`)
+            .then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
+            .then(tree => {
+                fillData(tree);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('detailContent').style.display = 'block';
+            })
+            .catch(() => showError());
+    }
+
+    function fillData(tree) {
+        document.getElementById('treeSpecies').textContent = tree.species || '未知';
+        document.getElementById('treeCode').textContent = tree.treeCode || tree.id;
+        document.getElementById('treeAge').textContent = tree.treeAge ? tree.treeAge + ' 年' : '--';
+        document.getElementById('treeHeight').textContent = tree.height ? tree.height + ' m' : '--';
+        document.getElementById('treeDbh').textContent = tree.dbh ? tree.dbh + ' cm' : '--';
+        document.getElementById('treeOwnership').textContent = tree.ownership || '--';
+        document.getElementById('surveyDate').textContent = tree.surveyDate || '--';
+
+        const levelBadge = document.getElementById('treeLevel');
+        levelBadge.textContent = tree.protectionLevel || '未知';
+        levelBadge.className = 'badge badge-level ml-2 level-' + (tree.protectionLevel || '');
+
+        const statusEl = document.getElementById('treeStatus');
+        statusEl.textContent = tree.growthStatus || '--';
+        statusEl.className = 'info-value ' + (tree.growthStatus === '正常' ? 'status-normal' : 'status-danger');
+
+        // 照片
+        document.getElementById('treePhoto').src = tree.photoDescription || '';
+        document.getElementById('photoDesc').textContent = tree.photoDescription ? '古树照片' : '暂无照片';
+
+        // 地图经纬度
+        document.getElementById('longitude').textContent = tree.longitude || '--';
+        document.getElementById('latitude').textContent = tree.latitude || '--';
+
+        // 分类信息
+        document.getElementById('treeFamily').textContent = tree.family || '--';
+        document.getElementById('treeGenus').textContent = tree.genus || '--';
+        document.getElementById('treeSpecies2').textContent = tree.species || '--';
+        document.getElementById('latinName').textContent = tree.latinName || '--';
+        document.getElementById('treeCategory').textContent = tree.treeCategory || '--';
+        document.getElementById('censusScope').textContent = tree.censusScope || '--';
+
+        // 位置信息
+        document.getElementById('province').textContent = tree.province || '--';
+        document.getElementById('city').textContent = tree.city || '--';
+        document.getElementById('county').textContent = tree.county || '--';
+        document.getElementById('town').textContent = tree.town || '--';
+        document.getElementById('village').textContent = tree.village || '--';
+        document.getElementById('forestArea').textContent = tree.forestArea || '--';
+        document.getElementById('altitude').textContent = tree.altitude ? tree.altitude + ' m' : '--';
+        document.getElementById('locationType').textContent = tree.locationType || '--';
+
+        // 生长环境
+        document.getElementById('slopePosition').textContent = tree.slopePosition || '--';
+        document.getElementById('slopeGradient').textContent = tree.slopeGradient || '--';
+        document.getElementById('slopeAspect').textContent = tree.slopeAspect || '--';
+        document.getElementById('envGrade').textContent = tree.environmentGrade || '--';
+
+        // 树体信息
+        document.getElementById('groundDiameter').textContent = tree.groundDiameter ? tree.groundDiameter + ' cm' : '--';
+        document.getElementById('crownSpread2').textContent = tree.crownSpread ? tree.crownSpread + ' m' : '--';
+        document.getElementById('circumference').textContent = tree.circumference ? tree.circumference + ' cm' : '--';
+        document.getElementById('groundCircumference').textContent = tree.groundCircumference ? tree.groundCircumference + ' cm' : '--';
+        document.getElementById('treeDamage').textContent = tree.treeDamage || '无';
+        document.getElementById('humanDisturbance').textContent = tree.humanDisturbance || '无';
+
+        // 管理信息
+        document.getElementById('department').textContent = tree.department || '--';
+        document.getElementById('maintainer').textContent = tree.maintainer || '--';
+        document.getElementById('protectionMeasures').textContent = tree.protectionMeasures || '--';
+        document.getElementById('keyValue').textContent = tree.keyValue || '--';
+        document.getElementById('remarks').textContent = tree.remarks || '无';
+    }
+
+    function showError() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('errorMsg').style.display = 'block';
+    }
+</script>
+</body>
+</html>
