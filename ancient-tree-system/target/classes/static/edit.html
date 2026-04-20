@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑古树 - 古树名木管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        body { padding-top: 20px; background-color: #f8f9fa; }
+        .edit-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 30px; }
+        .section-title {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .form-group label { font-weight: bold; color: #555; }
+        .required::after { content: " *"; color: #dc3545; }
+        .btn-save { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+        .btn-save:hover { opacity: 0.9; }
+        .photo-preview-box {
+            height: 200px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .photo-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 id="pageTitle">🌳 新增古树</h2>
+        <div>
+            <a href="list.html" class="btn btn-outline-primary">← 返回列表</a>
+            <a href="index.html" class="btn btn-outline-secondary ml-2">返回首页</a>
+        </div>
+    </div>
+
+    <div class="edit-card">
+        <form id="treeForm">
+            <input type="hidden" id="treeId">
+
+            <!-- 基本信息 -->
+            <div class="section-title">📋 基本信息</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="required">树种名称</label>
+                        <input type="text" class="form-control" id="species" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="required">树龄（年）</label>
+                        <input type="number" class="form-control" id="treeAge" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>古树编号</label>
+                        <input type="text" class="form-control" id="treeCode">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>古树类别</label>
+                        <select class="form-control" id="treeCategory">
+                            <option value="古树">古树</option>
+                            <option value="名木">名木</option>
+                            <option value="古树群">古树群</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 照片信息 -->
+            <div class="section-title">📷 照片信息</div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label>照片地址</label>
+                        <input type="text" class="form-control" id="photoDescription"
+                               placeholder="输入照片URL，如 https://example.com/tree.jpg">
+                        <small class="form-text text-muted">可以输入网络图片地址，或本地图片路径</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>照片预览</label>
+                        <div class="photo-preview-box">
+                            <img id="photoPreview" src="" onerror="this.src='https://via.placeholder.com/300x200?text=暂无照片'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分类信息 -->
+            <div class="section-title">🔬 分类信息</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>科</label>
+                        <input type="text" class="form-control" id="family">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>属</label>
+                        <input type="text" class="form-control" id="genus">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>种</label>
+                        <input type="text" class="form-control" id="species2">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>拉丁名</label>
+                        <input type="text" class="form-control" id="latinName">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 生长状况 -->
+            <div class="section-title">🌱 生长状况</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="required">保护等级</label>
+                        <select class="form-control" id="protectionLevel" required>
+                            <option value="">请选择</option>
+                            <option value="一级">一级</option>
+                            <option value="二级">二级</option>
+                            <option value="三级">三级</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="required">生长状况</label>
+                        <select class="form-control" id="growthStatus" required>
+                            <option value="">请选择</option>
+                            <option value="正常">正常</option>
+                            <option value="衰弱">衰弱</option>
+                            <option value="濒危">濒危</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>树高（m）</label>
+                        <input type="number" step="0.01" class="form-control" id="height">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>胸径（cm）</label>
+                        <input type="number" step="0.01" class="form-control" id="dbh">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>冠幅（m）</label>
+                        <input type="number" step="0.01" class="form-control" id="crownSpread">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 位置信息 -->
+            <div class="section-title">📍 位置信息</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>省</label>
+                        <input type="text" class="form-control" id="province" value="浙江省">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>市</label>
+                        <input type="text" class="form-control" id="city" value="衢州市">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>县</label>
+                        <input type="text" class="form-control" id="county" value="常山县">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>乡镇/街道</label>
+                        <input type="text" class="form-control" id="town">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>村</label>
+                        <input type="text" class="form-control" id="village">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>林区</label>
+                        <input type="text" class="form-control" id="forestArea">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>经度</label>
+                        <input type="number" step="0.00000001" class="form-control" id="longitude">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>纬度</label>
+                        <input type="number" step="0.00000001" class="form-control" id="latitude">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>海拔（m）</label>
+                        <input type="number" step="0.01" class="form-control" id="altitude">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 管理信息 -->
+            <div class="section-title">🛡️ 管理信息</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>权属</label>
+                        <select class="form-control" id="ownership">
+                            <option value="">请选择</option>
+                            <option value="国有">国有</option>
+                            <option value="集体">集体</option>
+                            <option value="个人">个人</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>主管部门</label>
+                        <input type="text" class="form-control" id="department">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>养护责任人</label>
+                        <input type="text" class="form-control" id="maintainer">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>调查日期</label>
+                        <input type="date" class="form-control" id="surveyDate">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>保护措施</label>
+                        <textarea class="form-control" id="protectionMeasures" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>重点价值</label>
+                        <textarea class="form-control" id="keyValue" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 备注 -->
+            <div class="section-title">📝 备注信息</div>
+            <div class="form-group">
+                <label>备注</label>
+                <textarea class="form-control" id="remarks" rows="3"></textarea>
+            </div>
+
+            <!-- 按钮 -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg btn-save px-5">💾 保存</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg ml-3 px-5" onclick="history.back()">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function getUrlParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const id = getUrlParam('id');
+        if (id) {
+            document.getElementById('pageTitle').textContent = '🌳 编辑古树';
+            document.getElementById('treeId').value = id;
+            loadTreeData(id);
+        }
+
+        // 照片实时预览
+        document.getElementById('photoDescription').addEventListener('input', function() {
+            document.getElementById('photoPreview').src = this.value || 'https://via.placeholder.com/300x200?text=暂无照片';
+        });
+    });
+
+    function loadTreeData(id) {
+        fetch(`/api/trees/${id}`)
+            .then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
+            .then(tree => {
+                fillForm(tree);
+            })
+            .catch(err => {
+                alert('加载数据失败：' + err.message);
+                window.location.href = 'list.html';
+            });
+    }
+
+    function fillForm(tree) {
+        document.getElementById('species').value = tree.species || '';
+        document.getElementById('treeAge').value = tree.treeAge || '';
+        document.getElementById('treeCode').value = tree.treeCode || '';
+        document.getElementById('treeCategory').value = tree.treeCategory || '古树';
+        document.getElementById('family').value = tree.family || '';
+        document.getElementById('genus').value = tree.genus || '';
+        document.getElementById('species2').value = tree.species || '';
+        document.getElementById('latinName').value = tree.latinName || '';
+        document.getElementById('protectionLevel').value = tree.protectionLevel || '';
+        document.getElementById('growthStatus').value = tree.growthStatus || '';
+        document.getElementById('height').value = tree.height || '';
+        document.getElementById('dbh').value = tree.dbh || '';
+        document.getElementById('crownSpread').value = tree.crownSpread || '';
+        document.getElementById('province').value = tree.province || '浙江省';
+        document.getElementById('city').value = tree.city || '衢州市';
+        document.getElementById('county').value = tree.county || '常山县';
+        document.getElementById('town').value = tree.town || '';
+        document.getElementById('village').value = tree.village || '';
+        document.getElementById('forestArea').value = tree.forestArea || '';
+        document.getElementById('longitude').value = tree.longitude || '';
+        document.getElementById('latitude').value = tree.latitude || '';
+        document.getElementById('altitude').value = tree.altitude || '';
+        document.getElementById('ownership').value = tree.ownership || '';
+        document.getElementById('department').value = tree.department || '';
+        document.getElementById('maintainer').value = tree.maintainer || '';
+        document.getElementById('surveyDate').value = tree.surveyDate || '';
+        document.getElementById('protectionMeasures').value = tree.protectionMeasures || '';
+        document.getElementById('keyValue').value = tree.keyValue || '';
+        document.getElementById('remarks').value = tree.remarks || '';
+
+        // 照片
+        document.getElementById('photoDescription').value = tree.photoDescription || '';
+        document.getElementById('photoPreview').src = tree.photoDescription || 'https://via.placeholder.com/300x200?text=暂无照片';
+    }
+
+    document.getElementById('treeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const id = document.getElementById('treeId').value;
+        const isEdit = !!id;
+
+        const treeData = {
+            species: document.getElementById('species').value,
+            treeAge: parseInt(document.getElementById('treeAge').value) || null,
+            treeCode: document.getElementById('treeCode').value || null,
+            treeCategory: document.getElementById('treeCategory').value,
+            family: document.getElementById('family').value || null,
+            genus: document.getElementById('genus').value || null,
+            latinName: document.getElementById('latinName').value || null,
+            protectionLevel: document.getElementById('protectionLevel').value,
+            growthStatus: document.getElementById('growthStatus').value,
+            height: parseFloat(document.getElementById('height').value) || null,
+            dbh: parseFloat(document.getElementById('dbh').value) || null,
+            crownSpread: parseFloat(document.getElementById('crownSpread').value) || null,
+            province: document.getElementById('province').value,
+            city: document.getElementById('city').value,
+            county: document.getElementById('county').value,
+            town: document.getElementById('town').value || null,
+            village: document.getElementById('village').value || null,
+            forestArea: document.getElementById('forestArea').value || null,
+            longitude: parseFloat(document.getElementById('longitude').value) || null,
+            latitude: parseFloat(document.getElementById('latitude').value) || null,
+            altitude: parseFloat(document.getElementById('altitude').value) || null,
+            ownership: document.getElementById('ownership').value || null,
+            department: document.getElementById('department').value || null,
+            maintainer: document.getElementById('maintainer').value || null,
+            surveyDate: document.getElementById('surveyDate').value || null,
+            protectionMeasures: document.getElementById('protectionMeasures').value || null,
+            keyValue: document.getElementById('keyValue').value || null,
+            remarks: document.getElementById('remarks').value || null,
+            photoDescription: document.getElementById('photoDescription').value || null
+        };
+
+        if (isEdit) treeData.id = parseInt(id);
+
+        const url = isEdit ? `/api/trees/${id}` : '/api/trees';
+        const method = isEdit ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(treeData)
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('Save failed');
+                return r.json();
+            })
+            .then(() => {
+                alert(isEdit ? '修改成功！' : '新增成功！');
+                window.location.href = 'list.html';
+            })
+            .catch(err => {
+                alert('保存失败：' + err.message);
+            });
+    });
+</script>
+</body>
+</html>
